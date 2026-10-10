@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地址详情 - Tronscan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; font-size: 14px; }
+  a { color: #4a90e2; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .topbar { background: #fff; border-bottom: 1px solid #e8e8e8; padding: 12px 0; }
+  .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: #c41e3a; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 16px; }
+  .logo-text { font-size: 18px; font-weight: bold; }
+  .topbar-links { display: flex; gap: 15px; font-size: 13px; }
+  .topbar-links a { color: #666; }
+
+  .breadcrumb { max-width: 1200px; margin: 0 auto; padding: 15px 20px 0; font-size: 13px; color: #999; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .page-title { font-size: 22px; font-weight: bold; margin-bottom: 16px; }
+
+  .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 20px; border-bottom: 1px solid #f0f0f0; font-weight: 600; font-size: 15px; background: #fafafa; }
+  .card-body { padding: 16px 20px; }
+
+  .info-row { display: flex; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { width: 180px; color: #888; flex-shrink: 0; }
+  .info-value { flex: 1; color: #333; word-break: break-all; }
+  .info-value.mono { font-family: "SF Mono", Consolas, monospace; font-size: 13px; }
+  .info-value.amount { color: #c41e3a; font-weight: 600; font-size: 18px; }
+  .info-value .usdt { color: #ff9800; font-weight: 600; }
+
+  .balance-box { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .balance-item { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; text-align: center; }
+  .balance-label { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .balance-value { font-size: 20px; font-weight: bold; }
+  .balance-value.trx { color: #c41e3a; }
+  .balance-value.usdt { color: #26a17b; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #fafafa; padding: 10px; text-align: left; font-size: 13px; color: #666; border-bottom: 1px solid #e8e8e8; }
+  td { padding: 10px; border-bottom: 1px solid #f5f5f5; font-size: 13px; }
+  td.mono { font-family: "SF Mono", Consolas, monospace; font-size: 12px; }
+  td.amount { color: #c41e3a; font-weight: 600; }
+  tr:hover { background: #fafafa; }
+
+  .addr-search { padding: 12px 20px; }
+  .addr-search input { width: 100%; padding: 10px 14px; border: 1px solid #e8e8e8; border-radius: 4px; font-size: 13px; }
+
+  .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; border-top: 1px solid #e8e8e8; margin-top: 20px; }
+
+  @media (max-width: 768px) {
+    .info-label { width: 100px; }
+    .balance-box { grid-template-columns: 1fr; }
+    .topbar-links { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <div class="logo-icon">T</div>
+      <div class="logo-text">Tronscan</div>
+    </div>
+    <div class="topbar-links">
+      <a href="index.html">首页</a>
+      <a href="index.html">交易列表</a>
+    </div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <a href="index.html">首页</a> / 地址列表
+</div>
+
+<div class="container">
+  <h1 class="page-title">地址详情</h1>
+
+  <div class="addr-search">
+    <input id="addrSearch" type="text" placeholder="输入地址查询（如 TLaGjwhv...）" />
+  </div>
+
+  <!-- 发送方钱包 -->
+  <div class="card" id="sender-card">
+    <div class="card-header">发送方钱包（主钱包）</div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label">地址</div>
+        <div class="info-value mono">TFuRdgLbf87XbDVnoThfCzk4jkxnwsYg1t</div>
+      </div>
+      <div class="balance-box">
+        <div class="balance-item">
+          <div class="balance-label">TRX 余额</div>
+          <div class="balance-value trx">9,999,999,740.14 TRX</div>
+        </div>
+        <div class="balance-item">
+          <div class="balance-label">USDT 余额</div>
+          <div class="balance-value usdt">986,855,470.84 USDT</div>
+        </div>
+        <div class="balance-item">
+          <div class="balance-label">已发起交易</div>
+          <div class="balance-value">70</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">已转出 USDT</div>
+        <div class="info-value usdt">13,144,529.16 USDT</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">USDT 合约</div>
+        <div class="info-value mono">TGHDLu1XmqswVgg4g7CfACotjAcJZeMwt5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USDT 合约 -->
+  <div class="card">
+    <div class="card-header">USDT 合约</div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label">合约地址</div>
+        <div class="info-value mono">TGHDLu1XmqswVgg4g7CfACotjAcJZeMwt5</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">代币名称</div>
+        <div class="info-value">Tether USD</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">代币符号</div>
+        <div class="info-value">USDT</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">精度</div>
+        <div class="info-value">6</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">总发行量</div>
+        <div class="info-value amount">1,000,000,000 USDT</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 受益人地址汇总 -->
+  <div class="card">
+    <div class="card-header">受益人地址汇总（共 67 个）</div>
+    <div class="card-body" style="padding:0;">
+      <table>
+        <thead>
+          <tr>
+            <th>地址</th>
+            <th>收到 USDT</th>
+            <th>交易数</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="addrTableBody">
+          
+            <tr class="addr-row">
+              <td class="mono">TDn2L49LvNWeRK9hQwqS611JGV2VNXA1T9</td>
+              <td class="amount">2,273,166.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TDn2L49LvNWeRK9hQwqS611JGV2VNXA1T9">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx</td>
+              <td class="amount">1,324,528.60 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TECXdSpFSMGE4PwhZVfK6NvroWPMoNuTfd</td>
+              <td class="amount">862,500.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TECXdSpFSMGE4PwhZVfK6NvroWPMoNuTfd">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TTUgudqWpuGju48g4EYVqTBdZVZy3Hpz7W</td>
+              <td class="amount">573,017.15 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TTUgudqWpuGju48g4EYVqTBdZVZy3Hpz7W">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TDpyNjVqWNmUEqSfyfriWQ9T9BRGAYMwXX</td>
+              <td class="amount">540,973.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TDpyNjVqWNmUEqSfyfriWQ9T9BRGAYMwXX">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TL99Tb4M1F6SCAEaqUXxsb7DKVEufjYQcP</td>
+              <td class="amount">441,499.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TL99Tb4M1F6SCAEaqUXxsb7DKVEufjYQcP">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TBbwn5L9tPn76ENnhxk7XR4AUmNjdkZaGM</td>
+              <td class="amount">415,409.90 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TBbwn5L9tPn76ENnhxk7XR4AUmNjdkZaGM">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TWUWZqx3NVTarG1BirzYfDfEZ4ptUXhQcp</td>
+              <td class="amount">399,764.40 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TWUWZqx3NVTarG1BirzYfDfEZ4ptUXhQcp">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TKEqeAkfSsvpyDQVxkfT8oTm3cszdARvLC</td>
+              <td class="amount">395,266.10 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TKEqeAkfSsvpyDQVxkfT8oTm3cszdARvLC">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TXfaDirEqn6zB3ceKqBCmPhKVBGz5aLW7W</td>
+              <td class="amount">295,711.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TXfaDirEqn6zB3ceKqBCmPhKVBGz5aLW7W">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TLaGjwhvA8XQYSxFAcAXy7Dvuue9eGYitv</td>
+              <td class="amount">284,255.20 USDT</td>
+              <td>2</td>
+              <td><a href="index.html?addr=TLaGjwhvA8XQYSxFAcAXy7Dvuue9eGYitv">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFGhU2en6VYbq5QjoP2pHmaSuZFAQQ6tGe</td>
+              <td class="amount">282,202.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFGhU2en6VYbq5QjoP2pHmaSuZFAQQ6tGe">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TF8vw2MSSuZoGnkDWT17nvZG5RJBGuncUx</td>
+              <td class="amount">278,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TF8vw2MSSuZoGnkDWT17nvZG5RJBGuncUx">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TXfENYGDXsiGoyXW7RfRjP6NwdZ1eZxv2M</td>
+              <td class="amount">247,250.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TXfENYGDXsiGoyXW7RfRjP6NwdZ1eZxv2M">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TY8MjaQgjXevUto8CPFTiDjYzY4eq1ZBUZ</td>
+              <td class="amount">211,359.04 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TY8MjaQgjXevUto8CPFTiDjYzY4eq1ZBUZ">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFrRiaeERx3nyaA2mPkC1xEM6qz7p9rVbx</td>
+              <td class="amount">203,645.84 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFrRiaeERx3nyaA2mPkC1xEM6qz7p9rVbx">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFxD6MqVweTeoLb93dF2WjL1Fncf9RetVX</td>
+              <td class="amount">193,310.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFxD6MqVweTeoLb93dF2WjL1Fncf9RetVX">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TNDmDyE9vEDYzaVtzFyidrDr7J1z1ZhAaH</td>
+              <td class="amount">181,792.70 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TNDmDyE9vEDYzaVtzFyidrDr7J1z1ZhAaH">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TKpSoyFTyjAjWWNhQRjyvN32h2SjoZDMEY</td>
+              <td class="amount">173,650.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TKpSoyFTyjAjWWNhQRjyvN32h2SjoZDMEY">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TCUbdgKAVKiJd3uSQhSy99VY7CgCXZUSvG</td>
+              <td class="amount">163,779.72 USDT</td>
+              <td>2</td>
+              <td><a href="index.html?addr=TCUbdgKAVKiJd3uSQhSy99VY7CgCXZUSvG">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TSXENd8uWE2NML5TSf7Apnu5oLkKBe72G9</td>
+              <td class="amount">157,327.74 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TSXENd8uWE2NML5TSf7Apnu5oLkKBe72G9">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TG4CnMzYLbhJE5scviTJX6MWnzF1CLDz3r</td>
+              <td class="amount">156,054.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TG4CnMzYLbhJE5scviTJX6MWnzF1CLDz3r">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TVjtHvhn4L3xXMxdA4jEKwyWkNj4Q8pKX8</td>
+              <td class="amount">143,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TVjtHvhn4L3xXMxdA4jEKwyWkNj4Q8pKX8">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFkQqF6FQvKNQBvo4xBMnWWPsohnQ5WNR2</td>
+              <td class="amount">142,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFkQqF6FQvKNQBvo4xBMnWWPsohnQ5WNR2">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TXKPYtXsAfNqzFyRQ1tYbQPg1sHHc3AG3B</td>
+              <td class="amount">138,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TXKPYtXsAfNqzFyRQ1tYbQPg1sHHc3AG3B">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TUKqF7NKq9wm8H2BjdMteY3YNucesSxTEX</td>
+              <td class="amount">133,650.01 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TUKqF7NKq9wm8H2BjdMteY3YNucesSxTEX">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TQaK2i9Ez32roCw4SkbKPD3rANf1zwrKAd</td>
+              <td class="amount">130,674.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TQaK2i9Ez32roCw4SkbKPD3rANf1zwrKAd">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TAsMrjMJsirjHpAwqJozwVGj63q6TbLh2Q</td>
+              <td class="amount">128,500.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TAsMrjMJsirjHpAwqJozwVGj63q6TbLh2Q">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TPEkCgaiqBgJVLtDokykj4vbNU1zcJwiA5</td>
+              <td class="amount">125,622.52 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TPEkCgaiqBgJVLtDokykj4vbNU1zcJwiA5">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TKPNtdh9pmD7H88jdEydEVTfvUhEpZcPoU</td>
+              <td class="amount">119,300.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TKPNtdh9pmD7H88jdEydEVTfvUhEpZcPoU">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TJCgQ1kPuKKrVvqYaL5yiz21WYQsfWbYNk</td>
+              <td class="amount">117,967.61 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TJCgQ1kPuKKrVvqYaL5yiz21WYQsfWbYNk">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TR6K12BvZ2j6H2WK5jBwJA2mYGGMu8wtgw</td>
+              <td class="amount">115,200.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TR6K12BvZ2j6H2WK5jBwJA2mYGGMu8wtgw">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TKzmqWYseejp1UHQNiqamCvcNT623nUd8U</td>
+              <td class="amount">109,391.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TKzmqWYseejp1UHQNiqamCvcNT623nUd8U">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TEoLh8z4bBswJVj1A4LrPqd1yVtPJN5MEG</td>
+              <td class="amount">105,300.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TEoLh8z4bBswJVj1A4LrPqd1yVtPJN5MEG">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TX2pxD6NXZAYeG9aWJExbVHeU4rpRFCL65</td>
+              <td class="amount">105,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TX2pxD6NXZAYeG9aWJExbVHeU4rpRFCL65">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TCkea2cBgHMF7MaaictmWucL8fz3v6fM9E</td>
+              <td class="amount">104,180.41 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TCkea2cBgHMF7MaaictmWucL8fz3v6fM9E">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TYwN38csB2kaXxUfQyPeHNNsA5J5jTX46n</td>
+              <td class="amount">101,906.57 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TYwN38csB2kaXxUfQyPeHNNsA5J5jTX46n">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TBtySJFhGAFuNAesLdH2Gxc6qLNjyr6fGg</td>
+              <td class="amount">97,750.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TBtySJFhGAFuNAesLdH2Gxc6qLNjyr6fGg">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TV4NwDvz8bjd9rFBYjCkbSjbcGaJN78HNf</td>
+              <td class="amount">96,800.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TV4NwDvz8bjd9rFBYjCkbSjbcGaJN78HNf">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TTEQktFXNvQeFFqGbALhHHTtUVqieanDqz</td>
+              <td class="amount">89,540.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TTEQktFXNvQeFFqGbALhHHTtUVqieanDqz">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TP1K3KDae37Z4ehRaL8dxwijtBrQiEriVh</td>
+              <td class="amount">88,600.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TP1K3KDae37Z4ehRaL8dxwijtBrQiEriVh">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TB1NEbAfUb8Tb11qC3DgHZB8eX3UNqUNXX</td>
+              <td class="amount">67,620.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TB1NEbAfUb8Tb11qC3DgHZB8eX3UNqUNXX">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TWCrFmdtGEECB2mL2nzZF7CXtDqpHa4r5F</td>
+              <td class="amount">63,998.65 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TWCrFmdtGEECB2mL2nzZF7CXtDqpHa4r5F">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TLz94yY3DP1PjJcJH6G2XajLLtriJnJqPi</td>
+              <td class="amount">63,023.31 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TLz94yY3DP1PjJcJH6G2XajLLtriJnJqPi">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFcfAQ6g6SgFr7Q493KuSvL4doKzYeTEH1</td>
+              <td class="amount">62,515.65 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFcfAQ6g6SgFr7Q493KuSvL4doKzYeTEH1">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TPaXDmv3r38Hjw9LuxqxD2zWde3SSoor3L</td>
+              <td class="amount">58,695.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TPaXDmv3r38Hjw9LuxqxD2zWde3SSoor3L">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TApyDXyESvKhpH6wNSVYMC6SkEPgW1LfXP</td>
+              <td class="amount">56,671.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TApyDXyESvKhpH6wNSVYMC6SkEPgW1LfXP">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TZGHBft1EZfGRpFvTitLAE2dkzeCsgahko</td>
+              <td class="amount">55,535.93 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TZGHBft1EZfGRpFvTitLAE2dkzeCsgahko">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TTf34ZKbVM5DjFfhYsQ1oFsLRMj5XcNhPm</td>
+              <td class="amount">45,502.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TTf34ZKbVM5DjFfhYsQ1oFsLRMj5XcNhPm">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TDWLNfDEzVvjNbLEELjwuiGVVfjvE2jZa3</td>
+              <td class="amount">44,512.00 USDT</td>
+              <td>2</td>
+              <td><a href="index.html?addr=TDWLNfDEzVvjNbLEELjwuiGVVfjvE2jZa3">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TFhMJecV7tsLkuzARiBJUsN2faLvR5XYUg</td>
+              <td class="amount">42,550.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TFhMJecV7tsLkuzARiBJUsN2faLvR5XYUg">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TUS2dCKEruUFAWWdQE7bju8JG35dWs5zas</td>
+              <td class="amount">32,675.30 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TUS2dCKEruUFAWWdQE7bju8JG35dWs5zas">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TMTK22vS2kFyGhLwTM2bFwfBsXsTTfs7t9</td>
+              <td class="amount">30,431.12 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TMTK22vS2kFyGhLwTM2bFwfBsXsTTfs7t9">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TYRfu5iwiKUpbDhAi9Wef2fniukMf7awgG</td>
+              <td class="amount">30,000.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TYRfu5iwiKUpbDhAi9Wef2fniukMf7awgG">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">THmuNGuu6XbEhnb3ZMewi2wHpiagzQH547</td>
+              <td class="amount">28,932.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=THmuNGuu6XbEhnb3ZMewi2wHpiagzQH547">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TL3rGPn4tH35iJfJKHReeAGgP4ypnu9Knp</td>
+              <td class="amount">26,524.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TL3rGPn4tH35iJfJKHReeAGgP4ypnu9Knp">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TSjZtwjxoxAtgVNpF7fGnPebQUozZyDD94</td>
+              <td class="amount">24,314.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TSjZtwjxoxAtgVNpF7fGnPebQUozZyDD94">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TDucrnuzKu8DWFV4v34SzAsFBBW3X2pTiv</td>
+              <td class="amount">24,274.50 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TDucrnuzKu8DWFV4v34SzAsFBBW3X2pTiv">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TQs3r36YbdPK2DE1NSXuzeDVYgEiTjPoff</td>
+              <td class="amount">24,150.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TQs3r36YbdPK2DE1NSXuzeDVYgEiTjPoff">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TMH2Dr8JUX6ZB5oPMsgad5KPjXYkQFWZBc</td>
+              <td class="amount">19,412.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TMH2Dr8JUX6ZB5oPMsgad5KPjXYkQFWZBc">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TURXCdG2RqkKYWkZqrr9GF9TiayrmUbuCf</td>
+              <td class="amount">18,170.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TURXCdG2RqkKYWkZqrr9GF9TiayrmUbuCf">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TRbZgbnHqBPGY5ixTdqrKnfwtxnWQXQ1nf</td>
+              <td class="amount">17,416.66 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TRbZgbnHqBPGY5ixTdqrKnfwtxnWQXQ1nf">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TDAS217aCAJqwiqfjLTk7861UkVjSwmMd8</td>
+              <td class="amount">16,795.13 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TDAS217aCAJqwiqfjLTk7861UkVjSwmMd8">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TKDuJL8QxQ7YNwmU5z88rsvVSk492HjVSQ</td>
+              <td class="amount">14,720.00 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TKDuJL8QxQ7YNwmU5z88rsvVSk492HjVSQ">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TQTW7w6g3jmoHJdBfvAcRjq19hNZssE1GM</td>
+              <td class="amount">12,577.82 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TQTW7w6g3jmoHJdBfvAcRjq19hNZssE1GM">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">THfHyxHLCaejoFF1RMSjzWzid5bEY2NztX</td>
+              <td class="amount">9,124.66 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=THfHyxHLCaejoFF1RMSjzWzid5bEY2NztX">查看交易</a></td>
+            </tr>
+          
+            <tr class="addr-row">
+              <td class="mono">TDzPUpSTD5gvwTjQwxayyTJP66hxQyKsT9</td>
+              <td class="amount">7,544.92 USDT</td>
+              <td>1</td>
+              <td><a href="index.html?addr=TDzPUpSTD5gvwTjQwxayyTJP66hxQyKsT9">查看交易</a></td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Powered by Tronscan-style · PtahDAO Trust Chain · 共 70 笔存证
+</div>
+
+<script>
+const addrSearch = document.getElementById('addrSearch');
+addrSearch.addEventListener('input', () => {
+  const q = addrSearch.value.trim().toLowerCase();
+  document.querySelectorAll('.addr-row').forEach(row => {
+    const addr = row.cells[0].textContent.toLowerCase();
+    row.style.display = addr.includes(q) ? '' : 'none';
+  });
+});
+
+// URL 参数自动填充
+const params = new URLSearchParams(location.search);
+const addrParam = params.get('addr');
+if (addrParam) {
+  addrSearch.value = addrParam;
+  addrSearch.dispatchEvent(new Event('input'));
+}
+</script>
+</body>
+</html>

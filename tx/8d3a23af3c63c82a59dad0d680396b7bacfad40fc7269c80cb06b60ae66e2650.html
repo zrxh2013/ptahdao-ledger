@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易详情 8d3a23af3c63c82a... - Tronscan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; font-size: 14px; }
+  a { color: #4a90e2; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .topbar { background: #fff; border-bottom: 1px solid #e8e8e8; padding: 12px 0; }
+  .topbar-inner { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: #c41e3a; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 16px; }
+  .logo-text { font-size: 18px; font-weight: bold; color: #333; }
+  .search { flex: 1; max-width: 400px; margin: 0 20px; }
+  .search input { width: 100%; padding: 8px 12px; border: 1px solid #e8e8e8; border-radius: 4px; font-size: 13px; }
+  .topbar-links { display: flex; gap: 15px; font-size: 13px; }
+  .topbar-links a { color: #666; }
+
+  .breadcrumb { max-width: 1200px; margin: 0 auto; padding: 15px 20px 0; font-size: 13px; color: #999; }
+  .breadcrumb a { color: #4a90e2; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .page-title { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 16px; }
+
+  .card { background: #fff; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 20px; border-bottom: 1px solid #f0f0f0; font-weight: 600; font-size: 15px; background: #fafafa; display: flex; justify-content: space-between; align-items: center; }
+  .card-body { padding: 16px 20px; }
+
+  .tx-hash-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .tx-hash { font-family: "SF Mono", Consolas, monospace; font-size: 13px; word-break: break-all; color: #333; }
+  .copy-btn { background: #f0f0f0; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; color: #666; }
+
+  .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: #e6f7ed; color: #52c41a; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .status-badge::before { content: "✓"; }
+
+  .info-row { display: flex; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { width: 180px; color: #888; flex-shrink: 0; }
+  .info-value { flex: 1; color: #333; word-break: break-all; }
+  .info-value.mono { font-family: "SF Mono", Consolas, monospace; font-size: 13px; }
+  .info-value.amount { color: #c41e3a; font-weight: 600; font-size: 16px; }
+  .info-value.link a { color: #4a90e2; }
+  .info-value .verified { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; color: #52c41a; font-size: 12px; }
+
+  .token-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; background: #fff3e0; color: #ff9800; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .token-badge::before { content: "₮"; }
+
+  .data-box { background: #f9f9f9; border: 1px solid #e8e8e8; border-radius: 4px; padding: 12px; font-family: "SF Mono", Consolas, monospace; font-size: 12px; word-break: break-all; color: #666; max-height: 200px; overflow-y: auto; }
+  .data-box .memo-field { background: #fff; padding: 10px; border-radius: 4px; margin-bottom: 8px; }
+  .data-box .memo-field .field-label { color: #999; font-size: 11px; margin-bottom: 4px; }
+
+  .verify-section { background: linear-gradient(135deg, #fff7ed, #ffe4e6); border: 1.5px solid #c41e3a; border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .verify-title { font-weight: bold; color: #c41e3a; margin-bottom: 10px; font-size: 14px; }
+  .verify-content { font-size: 13px; color: #333; line-height: 1.8; }
+  .verify-content code { background: #fff; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+
+  .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; border-top: 1px solid #e8e8e8; margin-top: 20px; }
+
+  @media (max-width: 768px) {
+    .info-label { width: 100px; }
+    .topbar-links { display: none; }
+  }
+</style>
+</head>
+<body>
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <div class="logo-icon">T</div>
+      <div class="logo-text">Tronscan</div>
+    </div>
+    <div class="search">
+      <input type="text" placeholder="搜索地址 / 交易哈希 / 区块..." />
+    </div>
+    <div class="topbar-links">
+      <a href="../index.html">首页</a>
+      <a href="../address.html">地址</a>
+      <a href="../index.html">交易列表</a>
+    </div>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="../index.html">首页</a> / <a href="../index.html">交易</a> / 交易详情
+</div>
+
+<div class="container">
+  <h1 class="page-title">交易详情</h1>
+
+  <!-- 交易基本信息 -->
+  <div class="card">
+    <div class="card-header">
+      <span>交易信息</span>
+      <span class="status-badge">成功</span>
+    </div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label">交易哈希</div>
+        <div class="info-value mono">
+          <div class="tx-hash-row">
+            <span class="tx-hash">8d3a23af3c63c82a59dad0d680396b7bacfad40fc7269c80cb06b60ae66e2650</span>
+            <button class="copy-btn" onclick="copyText('8d3a23af3c63c82a59dad0d680396b7bacfad40fc7269c80cb06b60ae66e2650')">复制</button>
+          </div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">区块</div>
+        <div class="info-value">
+          <a href="#">#48</a>
+          <span style="color:#999;margin-left:8px;font-size:12px;">(已确认)</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">区块时间</div>
+        <div class="info-value">2026-10-09 01:00:35 (UTC+8)</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">交易类型</div>
+        <div class="info-value">触发智能合约</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">状态</div>
+        <div class="info-value"><span class="status-badge">成功</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 转账信息（TRC20 USDT）-->
+  <div class="card">
+    <div class="card-header">
+      <span>转账详情</span>
+      <span class="token-badge">USDT</span>
+    </div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label">合约地址</div>
+        <div class="info-value mono link">
+          <a href="../address.html?addr=TGHDLu1XmqswVgg4g7CfACotjAcJZeMwt5">TGHDLu1XmqswVgg4g7CfACotjAcJZeMwt5</a>
+          <span class="verified">✓ 已验证</span>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">代币名称</div>
+        <div class="info-value">Tether USD (USDT)</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">发送方 (From)</div>
+        <div class="info-value mono link">
+          <a href="../address.html?addr=TFuRdgLbf87XbDVnoThfCzk4jkxnwsYg1t">TFuRdgLbf87XbDVnoThfCzk4jkxnwsYg1t</a>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">接收方 (To)</div>
+        <div class="info-value mono link">
+          <a href="../address.html?addr=TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx">TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx</a>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">转账金额</div>
+        <div class="info-value amount">1324528.60 USDT</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">代币精度</div>
+        <div class="info-value">6 decimals</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 资源消耗 -->
+  <div class="card">
+    <div class="card-header">资源消耗</div>
+    <div class="card-body">
+      <div class="info-row">
+        <div class="info-label">能量消耗</div>
+        <div class="info-value">14,011 Energy</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">带宽消耗</div>
+        <div class="info-value">354 Bandwidth</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">手续费</div>
+        <div class="info-value">0.01392 TRX</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memo / Data 字段 -->
+  <div class="card">
+    <div class="card-header">交易数据 (Memo / Data)</div>
+    <div class="card-body">
+      <div class="data-box">
+        <div class="memo-field">
+          <div class="field-label">Memo 明文（存证数据）：</div>
+          {"t":"吴雪云","a":"1324528.60","r":"REC-0086","addr":"TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx","ts":1791507635780}
+        </div>
+        <div class="memo-field">
+          <div class="field-label">Memo Hex：</div>
+          7b2274223a22e590b4e99baae4ba91222c2261223a22313332343532382e3630222c2272223a225245432d30303836222c2261646472223a22544350433254643873426f68367361757a33393736627032583973685a75785a4d78222c227473223a313739313530373633353738307d
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 存证核验信息 -->
+  <div class="verify-section">
+    <div class="verify-title">🛡 存证核验信息</div>
+    <div class="verify-content">
+      受益人姓名：<code>吴雪云</code><br/>
+      存证金额：<code>1324528.60 USDT</code><br/>
+      回执编号：<code>REC-0086</code><br/>
+      受益人地址：<code>TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx</code><br/>
+      上链时间戳：<code>1791507635780</code>（2026-10-09 01:00:35）<br/>
+      <hr style="margin:10px 0;border:none;border-top:1px dashed #c41e3a;"/>
+      <b>✓ 链上转账金额与存证金额一致：</b>1324528.60 USDT = 1324528.60 USDT<br/>
+      <b>✓ 链上接收方地址与存证地址一致：</b>TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx = TCPC2Td8sBoh6sauz3976bp2X9shZuxZMx<br/>
+      <b>✓ 交易哈希 SHA-256 已上链存证</b>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Powered by Tronscan-style · PtahDAO Trust Chain · 共 70 笔存证
+</div>
+
+<script>
+function copyText(text) {
+  navigator.clipboard && navigator.clipboard.writeText(text);
+  const btn = event.target;
+  const old = btn.textContent;
+  btn.textContent = '已复制';
+  setTimeout(() => btn.textContent = old, 1500);
+}
+</script>
+</body>
+</html>
